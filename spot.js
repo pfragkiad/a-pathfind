@@ -1,16 +1,3 @@
-// function Spot()
-// {
-//     //temp variable is needed
-//     var s =
-//     {
-//         'f':0,
-//         'g':0,
-//         'h':0
-//     }
-//     return s
-// }
-//var s = Spot()
-
 class Spot {
     constructor(i, j, width, height) {
         this.i = i;
@@ -21,7 +8,6 @@ class Spot {
         this.reset()
         
         this.wall = Math.random() < 0.3
-
         this.neighbors = []
     }
 
@@ -32,7 +18,8 @@ class Spot {
     }
 
     setNeighbors(neighbors) {
-        this.neighbors = neighbors.filter( n=> !n.wall)
+        //this.neighbors = neighbors.filter( n=> !n.wall)
+        this.neighbors = neighbors //.filter( n=> !n.wall)
     }
 
     show(color) {

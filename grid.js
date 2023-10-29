@@ -56,26 +56,31 @@ class Grid {
     }
 
     addNeighborsTo(i, j) {
+        
         var neighbors = []
-        if (i < this.cols - 1)
+
+        if (i < this.cols - 1 && !this.grid[i + 1][j].wall)
             neighbors.push(this.grid[i + 1][j])
-        if (i > 0)
+
+        if (i > 0 && !this.grid[i - 1][j].wall)
             neighbors.push(this.grid[i - 1][j])
-        if (j < this.rows - 1)
+
+        if (j < this.rows - 1 && !this.grid[i][j + 1].wall)
             neighbors.push(this.grid[i][j + 1])
-        if (j > 0)
+
+        if (j > 0 && !this.grid[i][j - 1].wall)
             neighbors.push(this.grid[i][j - 1])
 
-        if (i > 0 && j > 0)
+        if (i > 0 && j > 0 && !this.grid[i - 1][j - 1].wall)
             neighbors.push(this.grid[i - 1][j - 1])
 
-        if (i < this.cols - 1 && j > 0)
+        if (i < this.cols - 1 && j > 0 && !this.grid[i + 1][j - 1].wall)
             neighbors.push(this.grid[i + 1][j - 1])
 
-        if (i > 0 && j < rows - 1)
+        if (i > 0 && j < rows - 1 && !this.grid[i - 1][j + 1].wall)
             neighbors.push(this.grid[i - 1][j + 1])
 
-        if (i < this.cols - 1 && j < rows - 1)
+        if (i < this.cols - 1 && j < rows - 1 && !this.grid[i + 1][j + 1].wall)
             neighbors.push(this.grid[i + 1][j + 1])
 
         this.grid[i][j].setNeighbors(neighbors)
@@ -129,8 +134,8 @@ class Grid {
 
             //distance current to neigbor (mine)
             let d = manhattan(current.i, current.j, n.i, n.j)
-
             let tentativeScore = current.g + (d == 1 ? 1 : 1.4)
+
             if (tentativeScore < n.g) {
                 n.previous = current
                 this.updatePath(current)
@@ -181,28 +186,20 @@ class Grid {
         const cOpen = color(20, 200, 20)
         const cEmpty = color(220)
         const cPath = color(10, 10, 200)
-        const cStartEnd = color(255,255,0)
+        const cStartEnd = color(255, 255, 0)
 
         for (let i = 0; i < this.cols; i++)
             for (let j = 0; j < this.rows; j++) {
                 let s = this.grid[i][j]
                 //do not draw closedset/openset squares
-                if(this.openSet.includes(s) || this.useClosedSet && this.closedSet.includes(s)) continue
+                if (this.openSet.includes(s) || this.useClosedSet && this.closedSet.includes(s)) continue
                 s.show(cEmpty)
             }
-
-
-        // this.closedSet.forEach(function(s)
-        // {
-        //     s.show(color(255,0,0))
-        // })
 
         // this.openSet.forEach(function(s)
         // {
         //     s.show(color(0,255,0))
         // })
-
-
         this.openSet.forEach(s => s.show(cOpen))
 
         if (this.useClosedSet)

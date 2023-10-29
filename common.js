@@ -11,7 +11,7 @@ function heuristic(fromi, fromj, toi, toj)
 {
     //p5 function
     return dist(fromi, fromj, toi, toj)
-    //return Math.abs(fromi-toi)+Math.abs(fromj-toj)
+    //return manhattan(fromi, fromj, toi, toj)
 }
 
 function manhattan(fromi, fromj, toi, toj)
