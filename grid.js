@@ -19,11 +19,11 @@ class Grid {
         for (let i = 0; i < cols; i++) this.grid[i] = new Array(rows)
 
         //initialize spots
-        this.w = (width - 2) / cols
-        this.h = (height - 2) / rows
+        this.spotWidth = (width - 2) / cols
+        this.spotHeight = (height - 2) / rows
         for (let i = 0; i < cols; i++)
             for (let j = 0; j < rows; j++)
-                this.grid[i][j] = new Spot(i, j, this.w, this.h)
+                this.grid[i][j] = new Spot(i, j, this.spotWidth, this.spotHeight)
     }
 
     setEnd(endi, endj) {
@@ -57,6 +57,8 @@ class Grid {
             for (let j = 0; j < rows; j++)
                 this.grid[i][j].addNeighbors(this.grid)
 
+        //initialize sets and state
+        this.path = new Path(this.spotWidth, this.spotHeight)
         this.openSet = [this.start]
         if (Grid.useClosedSet)
             this.closedSet = []
@@ -64,7 +66,7 @@ class Grid {
         //state: 0 working, 1 solved, -1 unsolved
         this.state = 0
         this.isFinished = false
-        this.path = new Path(this.w, this.h)
+
     }
 
     checkLowest() {
@@ -72,7 +74,7 @@ class Grid {
 
         if (this.openSet.length == 0) {
             this.isFinished = true
-            this.path = new Path(this.w, this.h)
+            this.path = new Path(this.spotWidth, this.spotHeight)
             console.log("UNSOLVED!")
             this.state = -1
             return

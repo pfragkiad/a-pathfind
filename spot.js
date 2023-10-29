@@ -14,6 +14,7 @@ class Spot {
     //global control of diagonal behaviors
     static allowDiagonalNeigbors = true
     static allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree = true
+    static drawCircle = false
 
     reset() {
         this.f = Infinity;
@@ -78,10 +79,10 @@ class Spot {
 
         fill(color)
 
-        let drawCircle = true
+        
 
         noStroke()
-        if (drawCircle)
+        if (Spot.drawCircle)
             ellipse(1 + this.i * this.width + this.width / 2,
                 1 + this.j * this.height + this.height / 2,
                 this.width,
