@@ -11,11 +11,11 @@ class Grid {
         for (let i = 0; i < cols; i++) this.grid[i] = new Array(rows)
 
         //initialize spots
-        let w = (width - 2) / cols
-        let h = (height - 2) / rows
+        this.w = (width - 2) / cols
+        this.h = (height - 2) / rows
         for (let i = 0; i < cols; i++)
             for (let j = 0; j < rows; j++)
-                this.grid[i][j] = new Spot(i, j, w, h)
+                this.grid[i][j] = new Spot(i, j, this.w, this.h)
 
         this.setStartEnd(starti, startj, endi, endj)
     }
@@ -81,17 +81,32 @@ class Grid {
         if (j > 0 && !this.grid[i][j - 1].wall)
             neighbors.push(this.grid[i][j - 1])
 
-        if (i > 0 && j > 0 && !this.grid[i - 1][j - 1].wall)
-            neighbors.push(this.grid[i - 1][j - 1])
+        let allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree = true
 
-        if (i < this.cols - 1 && j > 0 && !this.grid[i + 1][j - 1].wall)
+        //diagonal neighbors
+        if (i > 0 && j > 0 && !this.grid[i - 1][j - 1].wall) //top-left
+        {
+            if (!allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree || !this.grid[i][j - 1].wall || !this.grid[i - 1][j].wall)
+                neighbors.push(this.grid[i - 1][j - 1])
+        }
+
+        if (i < this.cols - 1 && j > 0 && !this.grid[i + 1][j - 1].wall) //top-right
+        {
+            if(!allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree || !this.grid[i][j - 1].wall || !this.grid[i + 1][j].wall)
             neighbors.push(this.grid[i + 1][j - 1])
+        }
 
-        if (i > 0 && j < rows - 1 && !this.grid[i - 1][j + 1].wall)
+        if (i > 0 && j < rows - 1 && !this.grid[i - 1][j + 1].wall) //bottom-left
+        {
+            if(!allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree || !this.grid[i][j + 1].wall || !this.grid[i - 1][j].wall)
             neighbors.push(this.grid[i - 1][j + 1])
+        }
 
-        if (i < this.cols - 1 && j < rows - 1 && !this.grid[i + 1][j + 1].wall)
+        if (i < this.cols - 1 && j < rows - 1 && !this.grid[i + 1][j + 1].wall) //bottom-right
+        {
+            if(!allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree ||!this.grid[i][j + 1].wall || !this.grid[i + 1][j].wall)
             neighbors.push(this.grid[i + 1][j + 1])
+        }
 
         this.grid[i][j].setNeighbors(neighbors)
 
@@ -124,7 +139,6 @@ class Grid {
         this.openSet.forEach(s => { if (s.f < current.f) current = s })
 
         if (current === this.end) {
-
             this.updatePath(current)
             this.isFinished = true
             console.log("DONE!")
@@ -191,35 +205,73 @@ class Grid {
         //this.updatePath(current)
     }
 
-    show() {
-        const cClosed = color(200, 10, 10)
-        const cOpen = color(20, 200, 20)
-        const cEmpty = color(220)
-        const cPath = color(10, 10, 200)
-        const cStartEnd = color(255, 255, 0)
+    showPath() {
+        if (this.path) {
+            const cPath = color(10, 10, 200)
+            //this.path.forEach(s => s.show(cPath))
 
+            noFill()
+            stroke(255,20,200)
+            strokeWeight(5)
+            beginShape()
+            this.path.forEach(p => vertex(p.i * this.w + this.w / 2, p.j * this.h + this.h / 2))
+            endShape()
+
+        }
+    }
+
+    showEmptyOrWall() {
+        const cEmpty = color(220)
+        const cWall = color(0)
+
+        const drawEmpty = false
+
+        stroke(100)
         for (let i = 0; i < this.cols; i++)
             for (let j = 0; j < this.rows; j++) {
                 let s = this.grid[i][j]
-                //do not draw closedset/openset squares
-                if (this.openSet.includes(s) || this.useClosedSet && this.closedSet.includes(s)) continue
-                s.show(cEmpty)
+
+                if (s.wall) s.show(cWall)
+
+                if (drawEmpty) {
+                    //do not draw closedset/openset squares
+                    if (this.openSet.includes(s) || this.useClosedSet && this.closedSet.includes(s)) continue
+                    s.show(s.wall ? cWall : cEmpty)
+                }
             }
+    }
+
+    showOpenClosedSets()
+    {
+        const cClosed = color(200, 10, 10)
+        const cOpen = color(20, 200, 20)
+
 
         // this.openSet.forEach(function(s)
         // {
         //     s.show(color(0,255,0))
         // })
-        this.openSet.forEach(s => s.show(cOpen))
 
+        stroke(100)
+        this.openSet.forEach(s => s.show(cOpen))
         if (this.useClosedSet)
             this.closedSet.forEach(s => s.show(cClosed))
+    }
 
-        if (this.path)
-            this.path.forEach(s => s.show(cPath))
+    show() {
+        let drawOpenClosedSets = false
+        if(drawOpenClosedSets) this.showOpenClosedSets()
+        
+        this.showEmptyOrWall();
 
-        this.start.show(cStartEnd)
-        this.end.show(cStartEnd)
+        
+
+        this.showPath()
+
+        const cStart = color(200, 200, 20)
+        const cEnd = color(20, 200, 200)
+        this.start.show(cStart)
+        this.end.show(cEnd)
 
         if (this.isFinished) {
             textSize(32)
@@ -237,3 +289,4 @@ class Grid {
 
     }
 }
+

@@ -6,7 +6,7 @@ class Spot {
         this.height = height;
 
         this.reset()
-        
+
         this.wall = Math.random() < 0.3
         this.neighbors = []
     }
@@ -23,14 +23,24 @@ class Spot {
     }
 
     show(color) {
-        fill(color)
-        if (this.wall) fill(0)
+        //control color from the grid if the spot is a wall
 
-        //noStroke()
-        rect(1 + this.i * this.width,
-            1 + this.j * this.height,
-            this.width,
-            this.height);
+        fill(color)
+
+        let drawCircle = true
+
+        noStroke()
+        if (drawCircle)
+            ellipse(1 + this.i * this.width+ this.width/2,
+                1 + this.j * this.height + this.height/2,
+                this.width,
+                this.height);
+        else
+            rect(1 + this.i * this.width,
+                1 + this.j * this.height,
+                this.width,
+                this.height);
+
     }
 }
 var s = new Spot()

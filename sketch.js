@@ -1,3 +1,4 @@
+//Vastly inspired by Coding Challenge 51.1, 51.2, 51.3
 
 const cols = 50, rows = 50
 
@@ -31,6 +32,8 @@ function setup() {
 function mousePressed() {
     if (grid === undefined || checkbox === undefined) return
 
+    if (mouseButton !== LEFT) return
+
     var i = Math.floor(mouseX / width * cols)
     var j = Math.floor(mouseY / height * rows)
     if (i < 0 || i >= cols || j < 0 || j >= rows) return
@@ -51,6 +54,8 @@ function mousePressed() {
 
 function draw() {
     if (grid === undefined) return;
+
+    background(230)
     if (!grid.isFinished) grid.checkLowest()
     grid.show()
 }
