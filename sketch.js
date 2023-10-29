@@ -3,7 +3,7 @@
 const cols = 50, rows = 50
 
 var grid;
-var checkbox;
+var chkClickPoint, chkAllowDiagonals, chkDrawOpenClosedSets, chkAllowOpenDiagonalsOnly;
 
 function setup() {
     console.log('A* algorithm')
@@ -12,14 +12,35 @@ function setup() {
     textAlign(CENTER, CENTER)
     background(0)
 
-    checkbox = createCheckbox('Click will set endpoint', true)
-    //checkbox.changed(checkedClickBehavior)
+    chkClickPoint = createCheckbox('Click will set endpoint', true)
+    chkAllowDiagonals = createCheckbox('Allow diagonal neighbors', true)
+    chkAllowDiagonals.changed(checkedAllowDiagonals)
+    chkAllowOpenDiagonalsOnly = createCheckbox('Allow open diagonals only', true)
+    chkAllowOpenDiagonalsOnly.changed(checkedAllowOpenDiagonalsOnly)
+
+    chkDrawOpenClosedSets = createCheckbox('Draw open/closed sets', false)
+    chkDrawOpenClosedSets.changed(checkedDrawOpenClosedSets)
 
     grid = new Grid(cols, rows, width, height, 0, 0, cols - 1, rows - 1)
 
 }
 
-//function checkedClickBehavior(){}
+function checkedAllowDiagonals() { 
+    Spot.allowDiagonalNeigbors = chkAllowDiagonals.checked()
+    grid.reset()
+}
+
+function checkedAllowOpenDiagonalsOnly()
+{
+    Spot.allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree = chkAllowOpenDiagonalsOnly.checked()
+    grid.reset()
+}
+
+function checkedDrawOpenClosedSets(){
+    Grid.drawOpenClosedSets = chkDrawOpenClosedSets.checked()
+    grid.reset()
+}
+
 
 
 //Custom features:
@@ -31,7 +52,7 @@ function setup() {
 //Ability to change the start point/end point with click (behavior controlled by checkbox)
 
 function mousePressed() {
-    if (grid === undefined || checkbox === undefined) return
+    if (grid === undefined || chkClickPoint === undefined) return
 
     if (mouseButton !== LEFT) return
 
@@ -42,7 +63,7 @@ function mousePressed() {
 
     //grid = new Grid(cols, rows, width, height,i,j)
 
-    if (checkbox.checked()) {
+    if (chkClickPoint.checked()) {
         grid.setEnd(i, j)
         console.log(`New end: ${i}, ${j}`)
     }

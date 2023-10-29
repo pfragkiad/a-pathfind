@@ -16,10 +16,13 @@ class Spot {
     static allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree = true
     static drawCircle = true
 
+    //reset everything but its wall status, index and dimensions
     reset() {
         this.f = Infinity;
         this.g = Infinity;
         this.h = 0;
+        this.previous = undefined
+        this.neighbors = []
     }
 
     addNeighbors(grid) {
