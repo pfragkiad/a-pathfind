@@ -29,9 +29,16 @@ class Grid {
         this.end = this.grid[endi][endj]
         this.end.wall = false
 
-        this.closedSet = []
+
         this.openSet = []
         this.openSet.push(this.start)
+
+        //state: 0 working, 1 solved, -1 unsolved
+        this.state = 0
+
+        this.useClosedSet = false
+        if (this.useClosedSet)
+            this.closedSet = []
     }
 
     get(i, j) {
@@ -84,6 +91,7 @@ class Grid {
         if (this.openSet.length == 0) {
             this.isFinished = true
             console.log("NO SOLUTION!")
+            this.state = -1
             return
         }
 
@@ -95,20 +103,23 @@ class Grid {
             this.updatePath(current)
             this.isFinished = true
             console.log("DONE!")
+            this.state = 1
             return
         }
 
         removeFromArray(this.openSet, current)
-        this.closedSet.push(current)
+        if (this.useClosedSet)
+            this.closedSet.push(current)
 
         //https://en.wikipedia.org/wiki/A*_search_algorithm
         var neighbors = current.neighbors
         neighbors.forEach(n => {
-            if (this.closedSet.includes(n)) return
+            if (this.useClosedSet && this.closedSet.includes(n)) return
             if (n.wall) return;
 
-            //distance current to neigbor
+            //distance current to neigbor (mine)
             let d = manhattan(current.i, current.j, n.i, n.j)
+            
             let tentativeScore = current.g + (d == 1 ? 1 : 1.4)
             if (tentativeScore < n.g) {
                 n.previous = current
@@ -175,15 +186,26 @@ class Grid {
         //     s.show(color(0,255,0))
         // })
 
-        //if (!this.isFinished) {
+    
         this.openSet.forEach(s => s.show(cOpen))
-        this.closedSet.forEach(s => s.show(cClosed))
-        //}
-        //else
+        if (this.useClosedSet)
+            this.closedSet.forEach(s => s.show(cClosed))
+  
         if (this.path)
             this.path.forEach(s => s.show(cPath))
 
-        //if(this.isFinished) noLoop()
+        if (this.isFinished) {
+            textSize(32)
+            stroke(0)
+            fill(255)
+            strokeWeight(4)
+            if (this.state == 1)
+                text('FINISHED!', this.width / 2, this.height / 2)
+            else
+                text('UNSOLVED!', this.width / 2, this.height / 2)
+            strokeWeight(1)
+
+        }
 
     }
 }
