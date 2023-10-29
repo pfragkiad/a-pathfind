@@ -26,6 +26,7 @@ function setup() {
 //All OP
 //Solved/unsolved messages via 'text' centered messages
 //Remember wall - change end by clicking with the mouse
+//Option to not use closedSet
 //Different distance for diagonal neighbors (1.4)
 //Ability to change the start point/end point with click (behavior controlled by checkbox)
 
@@ -55,7 +56,8 @@ function mousePressed() {
 function draw() {
     if (grid === undefined) return;
 
-    background(230)
+    background(240)
+
     if (!grid.isFinished) grid.checkLowest()
     grid.show()
 }

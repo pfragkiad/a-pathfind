@@ -11,15 +11,66 @@ class Spot {
         this.neighbors = []
     }
 
+    //global control of diagonal behaviors
+    static allowDiagonalNeigbors = true
+    static allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree = true
+
     reset() {
         this.f = Infinity;
         this.g = Infinity;
         this.h = 0;
     }
 
-    setNeighbors(neighbors) {
-        //this.neighbors = neighbors.filter( n=> !n.wall)
-        this.neighbors = neighbors //.filter( n=> !n.wall)
+    addNeighbors(grid) {
+
+        this.neighbors = []
+
+        if (!grid) return;
+
+        let i = this.i
+        let j = this.j
+        let cols = grid.length
+        let rows = grid[0].length
+
+        //vertical neighbors
+        if (i < cols - 1 && !grid[i + 1][j].wall)
+            this.neighbors.push(grid[i + 1][j])
+
+        if (i > 0 && !grid[i - 1][j].wall)
+            this.neighbors.push(grid[i - 1][j])
+
+        if (j < rows - 1 && !grid[i][j + 1].wall)
+            this.neighbors.push(grid[i][j + 1])
+
+        if (j > 0 && !grid[i][j - 1].wall)
+            this.neighbors.push(grid[i][j - 1])
+
+        //diagonal neighbors
+        if (!Spot.allowDiagonalNeigbors) return;
+
+        if (i > 0 && j > 0 && !grid[i - 1][j - 1].wall) //top-left
+        {
+            if (!Spot.allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree || !grid[i][j - 1].wall || !grid[i - 1][j].wall)
+                this.neighbors.push(grid[i - 1][j - 1])
+        }
+
+        if (i < cols - 1 && j > 0 && !grid[i + 1][j - 1].wall) //top-right
+        {
+            if (!Spot.allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree || !grid[i][j - 1].wall || !grid[i + 1][j].wall)
+                this.neighbors.push(grid[i + 1][j - 1])
+        }
+
+        if (i > 0 && j < rows - 1 && !grid[i - 1][j + 1].wall) //bottom-left
+        {
+            if (!Spot.allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree || !grid[i][j + 1].wall || !grid[i - 1][j].wall)
+                this.neighbors.push(grid[i - 1][j + 1])
+        }
+
+        if (i < cols - 1 && j < rows - 1 && !grid[i + 1][j + 1].wall) //bottom-right
+        {
+            if (!Spot.allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree || !grid[i][j + 1].wall || !grid[i + 1][j].wall)
+                this.neighbors.push(grid[i + 1][j + 1])
+        }
     }
 
     show(color) {
@@ -31,8 +82,8 @@ class Spot {
 
         noStroke()
         if (drawCircle)
-            ellipse(1 + this.i * this.width+ this.width/2,
-                1 + this.j * this.height + this.height/2,
+            ellipse(1 + this.i * this.width + this.width / 2,
+                1 + this.j * this.height + this.height / 2,
                 this.width,
                 this.height);
         else
@@ -43,7 +94,7 @@ class Spot {
 
     }
 }
-var s = new Spot()
+
 
 // function Spot(i, j, width, height) {
 //     this.i = i;
