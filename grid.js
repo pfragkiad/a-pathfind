@@ -1,5 +1,5 @@
 class Grid {
-    constructor(cols, rows, width, height, endi, endj) {
+    constructor(cols, rows, width, height, starti, startj, endi, endj) {
         this.cols = cols
         this.rows = rows
         this.width = width
@@ -7,6 +7,7 @@ class Grid {
 
         //initialize 2d array
         this.grid = new Array(cols)
+        //this.grid = []; this.grid.length = cols
         for (let i = 0; i < cols; i++) this.grid[i] = new Array(rows)
 
         //initialize spots
@@ -16,16 +17,25 @@ class Grid {
             for (let j = 0; j < rows; j++)
                 this.grid[i][j] = new Spot(i, j, w, h)
 
-        this.resetStart(endi, endj)
+        this.setStartEnd(starti, startj, endi, endj)
     }
 
-    resetStart(endi, endj) {
+    setEnd(endi, endj) {
+        this.setStartEnd(this.start.i, this.start.j, endi, endj)
+    }
+
+    setStart(starti, startj) {
+        this.setStartEnd(starti, startj, this.end.i, this.end.j)
+    }
+
+
+    setStartEnd(starti, startj, endi, endj) {
         for (let i = 0; i < cols; i++)
             for (let j = 0; j < rows; j++)
                 this.grid[i][j].reset()
 
         //initialize other algorithm properties
-        this.start = this.grid[0][0]
+        this.start = this.grid[starti][startj]
         this.start.g = this.start.f = 0
         this.start.wall = false
 
@@ -37,26 +47,26 @@ class Grid {
             for (let j = 0; j < rows; j++)
                 this.addNeighborsTo(i, j)
 
+        this.useClosedSet = true
 
-        this.openSet = []
-        this.openSet.push(this.start)
+        this.openSet = [this.start]
+        if (this.useClosedSet)
+            this.closedSet = []
 
         //state: 0 working, 1 solved, -1 unsolved
         this.state = 0
         this.isFinished = false
         this.path = []
 
-        this.useClosedSet = true
-        if (this.useClosedSet)
-            this.closedSet = []
+
     }
 
-    get(i, j) {
-        return this.grid[i][j]
-    }
+    // get(i, j) {
+    //     return this.grid[i][j]
+    // }
 
     addNeighborsTo(i, j) {
-        
+
         var neighbors = []
 
         if (i < this.cols - 1 && !this.grid[i + 1][j].wall)

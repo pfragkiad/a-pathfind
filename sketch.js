@@ -1,37 +1,58 @@
 
-var cols = 50, rows =50
+const cols = 50, rows = 50
 
 var grid;
+var checkbox;
 
 function setup() {
-    createCanvas(600, 600)
     console.log('A* algorithm')
 
-    grid = new Grid(cols, rows, width, height,cols-1,rows-1)
+    createCanvas(600, 600)
+    textAlign(CENTER, CENTER)
+    background(0)
+
+    checkbox = createCheckbox('Click will set endpoint', true)
+    //checkbox.changed(checkedClickBehavior)
+
+    grid = new Grid(cols, rows, width, height, 0, 0, cols - 1, rows - 1)
 
 }
 
-function mousePressed()
-{
-    var i= Math.floor(mouseX/width*cols)
-    var j= Math.floor(mouseY/height*rows)
-    console.log(`Clicked ${i}, ${j}`)
+//function checkedClickBehavior(){}
+
+
+//Custom features:
+//All OP
+//Solved/unsolved messages via 'text' centered messages
+//Remember wall - change end by clicking with the mouse
+//Different distance for diagonal neighbors (1.4)
+//Ability to change the start point/end point with click (behavior controlled by checkbox)
+
+function mousePressed() {
+    if (grid === undefined || checkbox === undefined) return
+
+    var i = Math.floor(mouseX / width * cols)
+    var j = Math.floor(mouseY / height * rows)
+    if (i < 0 || i >= cols || j < 0 || j >= rows) return
+
 
     //grid = new Grid(cols, rows, width, height,i,j)
-    grid.resetStart(i,j)
+
+    if (checkbox.checked()) {
+        grid.setEnd(i, j)
+        console.log(`New end: ${i}, ${j}`)
+    }
+    else {
+        grid.setStart(i, j)
+        console.log(`New start: ${i}, ${j}`)
+    }
 }
 
 
 function draw() {
-   
-    background(0)
-
-    if(grid===undefined) return;
-
-    grid.checkLowest()
+    if (grid === undefined) return;
+    if (!grid.isFinished) grid.checkLowest()
     grid.show()
-
-
 }
 
 
