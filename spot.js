@@ -18,22 +18,26 @@ class Spot {
         this.width = width;
         this.height = height;
 
-        this.f = Infinity;
-        this.g = Infinity;
-        this.h = 0;
-
-        this.wall = Math.random() < 0.2
+        this.reset()
+        
+        this.wall = Math.random() < 0.3
 
         this.neighbors = []
     }
 
+    reset() {
+        this.f = Infinity;
+        this.g = Infinity;
+        this.h = 0;
+    }
+
     setNeighbors(neighbors) {
-        this.neighbors = neighbors
+        this.neighbors = neighbors.filter( n=> !n.wall)
     }
 
     show(color) {
         fill(color)
-        if(this.wall) fill(0)
+        if (this.wall) fill(0)
 
         //noStroke()
         rect(1 + this.i * this.width,

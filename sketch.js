@@ -1,10 +1,10 @@
 
-var cols = 30, rows =30
+var cols = 50, rows =50
 
 var grid;
 
 function setup() {
-    createCanvas(400, 400)
+    createCanvas(600, 600)
     console.log('A* algorithm')
 
     grid = new Grid(cols, rows, width, height,cols-1,rows-1)
@@ -15,9 +15,10 @@ function mousePressed()
 {
     var i= Math.floor(mouseX/width*cols)
     var j= Math.floor(mouseY/height*rows)
-    console.log(`${i}, ${j}, ${mouseX/width}`)
+    console.log(`Clicked ${i}, ${j}`)
 
-    grid = new Grid(cols, rows, width, height,i,j)
+    //grid = new Grid(cols, rows, width, height,i,j)
+    grid.resetStart(i,j)
 }
 
 

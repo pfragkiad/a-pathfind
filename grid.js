@@ -16,10 +16,13 @@ class Grid {
             for (let j = 0; j < rows; j++)
                 this.grid[i][j] = new Spot(i, j, w, h)
 
-        //initialize neighbors
+        this.resetStart(endi, endj)
+    }
+
+    resetStart(endi, endj) {
         for (let i = 0; i < cols; i++)
             for (let j = 0; j < rows; j++)
-                this.addNeighborsTo(i, j)
+                this.grid[i][j].reset()
 
         //initialize other algorithm properties
         this.start = this.grid[0][0]
@@ -29,14 +32,21 @@ class Grid {
         this.end = this.grid[endi][endj]
         this.end.wall = false
 
+        //initialize neighbors (neighbors are filtered)
+        for (let i = 0; i < cols; i++)
+            for (let j = 0; j < rows; j++)
+                this.addNeighborsTo(i, j)
+
 
         this.openSet = []
         this.openSet.push(this.start)
 
         //state: 0 working, 1 solved, -1 unsolved
         this.state = 0
+        this.isFinished = false
+        this.path = []
 
-        this.useClosedSet = false
+        this.useClosedSet = true
         if (this.useClosedSet)
             this.closedSet = []
     }
@@ -68,8 +78,8 @@ class Grid {
         if (i < this.cols - 1 && j < rows - 1)
             neighbors.push(this.grid[i + 1][j + 1])
 
-
         this.grid[i][j].setNeighbors(neighbors)
+
         //console.log(`Added neighbors for ${i}, ${j}`)
         // if(i==0 && j==0)
         //     console.log(this.grid[0][0])
@@ -115,11 +125,11 @@ class Grid {
         var neighbors = current.neighbors
         neighbors.forEach(n => {
             if (this.useClosedSet && this.closedSet.includes(n)) return
-            if (n.wall) return;
+            //if (n.wall) return; //no need because 'neighbors' that are wall are not added at all
 
             //distance current to neigbor (mine)
             let d = manhattan(current.i, current.j, n.i, n.j)
-            
+
             let tentativeScore = current.g + (d == 1 ? 1 : 1.4)
             if (tentativeScore < n.g) {
                 n.previous = current
@@ -167,14 +177,20 @@ class Grid {
     }
 
     show() {
-        const cClosed = color(255, 0, 0)
-        const cOpen = color(0, 255, 0)
-        const cEmpty = color(210)
-        const cPath = color(0, 0, 255)
+        const cClosed = color(200, 10, 10)
+        const cOpen = color(20, 200, 20)
+        const cEmpty = color(220)
+        const cPath = color(10, 10, 200)
+        const cStartEnd = color(255,255,0)
 
         for (let i = 0; i < this.cols; i++)
-            for (let j = 0; j < this.rows; j++)
-                this.grid[i][j].show(cEmpty)
+            for (let j = 0; j < this.rows; j++) {
+                let s = this.grid[i][j]
+                //do not draw closedset/openset squares
+                if(this.openSet.includes(s) || this.useClosedSet && this.closedSet.includes(s)) continue
+                s.show(cEmpty)
+            }
+
 
         // this.closedSet.forEach(function(s)
         // {
@@ -186,13 +202,17 @@ class Grid {
         //     s.show(color(0,255,0))
         // })
 
-    
+
         this.openSet.forEach(s => s.show(cOpen))
+
         if (this.useClosedSet)
             this.closedSet.forEach(s => s.show(cClosed))
-  
+
         if (this.path)
             this.path.forEach(s => s.show(cPath))
+
+        this.start.show(cStartEnd)
+        this.end.show(cStartEnd)
 
         if (this.isFinished) {
             textSize(32)
@@ -200,12 +220,13 @@ class Grid {
             fill(255)
             strokeWeight(4)
             if (this.state == 1)
-                text('FINISHED!', this.width / 2, this.height / 2)
+                text('SOLVED', this.width / 2, this.height / 2)
             else
-                text('UNSOLVED!', this.width / 2, this.height / 2)
+                text('UNSOLVED', this.width / 2, this.height / 2)
             strokeWeight(1)
 
         }
+
 
     }
 }
