@@ -4,6 +4,7 @@ const cols = 50, rows = 50
 
 var grid;
 var chkClickPoint, chkAllowDiagonals, chkDrawOpenClosedSets, chkAllowOpenDiagonalsOnly, chkRunUntilEnd;
+var btnReset;
 
 function setup() {
     console.log('A* algorithm')
@@ -26,9 +27,12 @@ function setup() {
     Grid.drawOpenClosedSets = chkDrawOpenClosedSets.checked()
     chkDrawOpenClosedSets.changed(checkedDrawOpenClosedSets)
 
-    chkRunUntilEnd = createCheckbox('Run until end',true)
+    chkRunUntilEnd = createCheckbox('Show only final solution',true)
     Grid.runUntilEnd = chkRunUntilEnd.checked()
     chkRunUntilEnd.changed(checkedRunUntilEnd)
+
+    btnReset = createButton('Reset')
+    btnReset.mousePressed(btnResetClicked)
 
     grid = new Grid(cols, rows, width, height, 0, 0, cols - 1, rows - 1)
 
@@ -54,6 +58,11 @@ function checkedRunUntilEnd()
 {
     Grid.runUntilEnd = chkRunUntilEnd.checked()
     grid.reset()
+}
+
+function btnResetClicked()
+{
+    grid = new Grid(cols, rows, width, height, 0, 0, cols - 1, rows - 1)
 }
 
 
