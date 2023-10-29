@@ -1,6 +1,5 @@
-class Path
-{
-    constructor(spotWidth,spotHeight){
+class Path {
+    constructor(spotWidth, spotHeight) {
         this.path = []
         this.spotWidth = spotWidth
         this.spotHeight = spotHeight
@@ -8,16 +7,15 @@ class Path
         Path.lineColor = color(255, 20, 200)
     }
 
-    static drawWithCurves = true
+    static drawWithCurves = false
     static lineColor //= color(255, 20, 200)
 
     update(current) {
         this.path = [current]
 
-        var temp = current;
-        while (temp.previous) {
-            this.path.push(temp.previous)
-            temp = temp.previous
+        while (current.previous) {
+            this.path.push(current.previous)
+            current = current.previous
         }
     }
 
@@ -25,6 +23,7 @@ class Path
         if (!this.path || this.path.length == 0) return
 
         noFill()
+
         stroke(Path.lineColor)
         strokeWeight(6)
         beginShape()
@@ -32,12 +31,26 @@ class Path
             if (Path.drawWithCurves) {
                 let p = this.path[0]
                 curveVertex(p.i * this.spotWidth + this.spotWidth / 2, p.j * this.spotHeight + this.spotHeight / 2)
+
                 this.path.forEach(p => curveVertex(p.i * this.spotWidth + this.spotWidth / 2, p.j * this.spotHeight + this.spotHeight / 2))
+                // for (let i = 0; i < this.path.length; i++) {
+
+                //     p = this.path[i];
+
+                //     stroke(55, 20, 200, 255 * i / this.path.length)
+                //     curveVertex(p.i * this.spotWidth + this.spotWidth / 2, p.j * this.spotHeight + this.spotHeight / 2)
+                // }
+
                 p = this.path[this.path.length - 1]
                 curveVertex(p.i * this.spotWidth + this.spotWidth / 2, p.j * this.spotHeight + this.spotHeight / 2)
             }
-            else
+            else {
                 this.path.forEach(p => vertex(p.i * this.spotWidth + this.spotWidth / 2, p.j * this.spotHeight + this.spotHeight / 2))
+                // for (let i = 0; i < this.path.length; i++) {
+                //     let p = this.path[i];
+                //     vertex(p.i * this.spotWidth + this.spotWidth / 2, p.j * this.spotHeight + this.spotHeight / 2)
+                // }
+            }
         }
         endShape()
     }

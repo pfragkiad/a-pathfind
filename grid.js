@@ -8,6 +8,7 @@ class Grid {
     static useClosedSet = true
     static drawEmpty = false
     static drawOpenClosedSets = false
+    static runUntilEnd = false
 
 
     initializeSpots(cols, rows, width, height) {
@@ -72,86 +73,91 @@ class Grid {
 
     }
 
-    checkLowest() {
-        if (this.isFinished) return
+    proceed() {
+        //if (this.isFinished) return
 
-        if (this.openSet.length == 0) {
-            this.isFinished = true
-            this.path = new Path(this.spotWidth, this.spotHeight)
-            console.log("UNSOLVED!")
-            this.state = -1
-            return
-        }
+        while (!this.isFinished) {
 
-        var current = this.openSet[0];
-        this.openSet.forEach(s => { if (s.f < current.f) current = s })
-
-        if (current === this.end) {
-            this.path.update(current)
-
-            this.isFinished = true
-            console.log("SOLVED!")
-            this.state = 1
-            return
-        }
-
-        removeFromArray(this.openSet, current)
-        if (Grid.useClosedSet)
-            this.closedSet.push(current)
-
-        //https://en.wikipedia.org/wiki/A*_search_algorithm
-        var neighbors = current.neighbors
-        neighbors.forEach(n => {
-            if (Grid.useClosedSet && this.closedSet.includes(n)) return
-            //if (n.wall) return; //no need because 'neighbors' that are wall are not added at all
-
-            //distance current to neigbor (mine)
-            let d = manhattan(current.i, current.j, n.i, n.j)
-            let tentativeScore = current.g + (d == 1 ? 1 : 1.4142)
-
-            if (tentativeScore < n.g) {
-                n.previous = current
-                this.path.update(current)
-
-                n.g = tentativeScore
-                n.h = heuristic(n.i, n.j, this.end.i, this.end.j)
-                n.f = n.g + n.h
-                if (!this.openSet.includes(n))
-                    this.openSet.push(n)
+            if (this.openSet.length == 0) {
+                this.isFinished = true
+                this.path = new Path(this.spotWidth, this.spotHeight)
+                console.log("UNSOLVED!")
+                this.state = -1
+                return
             }
 
-        })
+            var current = this.openSet[0];
+            this.openSet.forEach(s => { if (s.f < current.f) current = s })
 
-        //based on code-train (modified only for the diagonal distance)
-        // for (let i = 0; i < neighbors.length; i++) {
-        //     var n = neighbors[i]
-        //     if (this.closedSet.includes(n) || n.wall) continue
+            if (current === this.end) {
+                this.path.update(current)
 
-        //     let d = manhattan(current.i, current.j, n.i, n.j)
-        //     var tempG = current.g + d == 1 ? 1 : 1.4 //1 ==distance between neigbor and current
+                this.isFinished = true
+                console.log("SOLVED!")
+                this.state = 1
+                return
+            }
 
-        //     let newPath = false
-        //     if (this.openSet.includes(n)) {
-        //         if (tempG < n.g) {
-        //             n.g = tempG
-        //             newPath = true
-        //         }
-        //     }
-        //     else {
-        //         n.g = tempG
-        //         this.openSet.push(n)
-        //         newPath = true
-        //     }
+            removeFromArray(this.openSet, current)
+            if (Grid.useClosedSet)
+                this.closedSet.push(current)
 
-        //     //heuristic (distance between neighbor and end)
-        //     if (newPath) {
-        //         n.h = heuristic(current.i, current.j, this.end.i, this.end.j)
-        //         n.f = n.g + n.h
-        //         n.previous = current
-        //     }
-        // }
+            //https://en.wikipedia.org/wiki/A*_search_algorithm
+            var neighbors = current.neighbors
+            neighbors.forEach(n => {
+                if (Grid.useClosedSet && this.closedSet.includes(n)) return
+                //if (n.wall) return; //no need because 'neighbors' that are wall are not added at all
 
-        //this.updatePath(current)
+                //distance current to neigbor (mine)
+                let d = manhattan(current.i, current.j, n.i, n.j)
+                let tentativeScore = current.g + (d == 1 ? 1 : 1.4142)
+
+                if (tentativeScore < n.g) {
+                    n.previous = current
+                    this.path.update(current)
+
+                    n.g = tentativeScore
+                    n.h = heuristic(n.i, n.j, this.end.i, this.end.j)
+                    n.f = n.g + n.h
+                    if (!this.openSet.includes(n))
+                        this.openSet.push(n)
+                }
+
+            })
+
+            //based on code-train (modified only for the diagonal distance)
+            // for (let i = 0; i < neighbors.length; i++) {
+            //     var n = neighbors[i]
+            //     if (this.closedSet.includes(n) || n.wall) continue
+
+            //     let d = manhattan(current.i, current.j, n.i, n.j)
+            //     var tempG = current.g + d == 1 ? 1 : 1.4 //1 ==distance between neigbor and current
+
+            //     let newPath = false
+            //     if (this.openSet.includes(n)) {
+            //         if (tempG < n.g) {
+            //             n.g = tempG
+            //             newPath = true
+            //         }
+            //     }
+            //     else {
+            //         n.g = tempG
+            //         this.openSet.push(n)
+            //         newPath = true
+            //     }
+
+            //     //heuristic (distance between neighbor and end)
+            //     if (newPath) {
+            //         n.h = heuristic(current.i, current.j, this.end.i, this.end.j)
+            //         n.f = n.g + n.h
+            //         n.previous = current
+            //     }
+            // }
+
+            //this.updatePath(current)
+
+            if(!Grid.runUntilEnd) break;
+        }
     }
 
     showEmptyOrWall() {
@@ -191,7 +197,7 @@ class Grid {
     }
 
     show() {
-        
+
         if (Grid.drawOpenClosedSets) this.showOpenClosedSets()
 
         this.showEmptyOrWall();

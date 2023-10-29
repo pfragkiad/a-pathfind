@@ -3,7 +3,7 @@
 const cols = 50, rows = 50
 
 var grid;
-var chkClickPoint, chkAllowDiagonals, chkDrawOpenClosedSets, chkAllowOpenDiagonalsOnly;
+var chkClickPoint, chkAllowDiagonals, chkDrawOpenClosedSets, chkAllowOpenDiagonalsOnly, chkRunUntilEnd;
 
 function setup() {
     console.log('A* algorithm')
@@ -13,13 +13,22 @@ function setup() {
     background(0)
 
     chkClickPoint = createCheckbox('Click will set endpoint', true)
+
     chkAllowDiagonals = createCheckbox('Allow diagonal neighbors', true)
+    Spot.allowDiagonalNeigbors = chkAllowDiagonals.checked()
     chkAllowDiagonals.changed(checkedAllowDiagonals)
+
     chkAllowOpenDiagonalsOnly = createCheckbox('Allow open diagonals only', true)
     chkAllowOpenDiagonalsOnly.changed(checkedAllowOpenDiagonalsOnly)
+    Spot.allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree = chkAllowOpenDiagonalsOnly.checked()
 
-    chkDrawOpenClosedSets = createCheckbox('Draw open/closed sets', false)
+    chkDrawOpenClosedSets = createCheckbox('Draw open/closed sets', true)
+    Grid.drawOpenClosedSets = chkDrawOpenClosedSets.checked()
     chkDrawOpenClosedSets.changed(checkedDrawOpenClosedSets)
+
+    chkRunUntilEnd = createCheckbox('Run until end',true)
+    Grid.runUntilEnd = chkRunUntilEnd.checked()
+    chkRunUntilEnd.changed(checkedRunUntilEnd)
 
     grid = new Grid(cols, rows, width, height, 0, 0, cols - 1, rows - 1)
 
@@ -38,6 +47,12 @@ function checkedAllowOpenDiagonalsOnly()
 
 function checkedDrawOpenClosedSets(){
     Grid.drawOpenClosedSets = chkDrawOpenClosedSets.checked()
+    grid.reset()
+}
+
+function checkedRunUntilEnd()
+{
+    Grid.runUntilEnd = chkRunUntilEnd.checked()
     grid.reset()
 }
 
@@ -79,7 +94,7 @@ function draw() {
 
     background(240)
 
-    if (!grid.isFinished) grid.checkLowest()
+    if (!grid.isFinished) grid.proceed()
     grid.show()
 }
 
