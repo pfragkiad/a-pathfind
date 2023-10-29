@@ -16,6 +16,7 @@ class Path
 
         var temp = current;
         while (temp.previous) {
+            //if(!this.path) return
             this.path.push(temp.previous)
             temp = temp.previous
         }

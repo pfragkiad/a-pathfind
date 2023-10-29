@@ -14,7 +14,7 @@ class Spot {
     //global control of diagonal behaviors
     static allowDiagonalNeigbors = true
     static allowDiagonalOnlyIfAtLeastOneVerticalOrHorizontalFree = true
-    static drawCircle = false
+    static drawCircle = true
 
     reset() {
         this.f = Infinity;

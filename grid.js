@@ -6,6 +6,9 @@ class Grid {
     }
 
     static useClosedSet = true
+    static drawEmpty = false
+    static drawOpenClosedSets = false
+
 
     initializeSpots(cols, rows, width, height) {
         this.cols = cols
@@ -155,7 +158,6 @@ class Grid {
         const cEmpty = color(220)
         const cWall = color(0)
 
-        const drawEmpty = false
 
         stroke(100)
         for (let i = 0; i < this.cols; i++)
@@ -164,7 +166,7 @@ class Grid {
 
                 if (s.wall) s.show(cWall)
 
-                if (drawEmpty) {
+                if (Grid.drawEmpty) {
                     //do not draw closedset/openset squares
                     if (this.openSet.includes(s) || Grid.useClosedSet && this.closedSet.includes(s)) continue
                     s.show(s.wall ? cWall : cEmpty)
@@ -189,8 +191,8 @@ class Grid {
     }
 
     show() {
-        let drawOpenClosedSets = true
-        if (drawOpenClosedSets) this.showOpenClosedSets()
+        
+        if (Grid.drawOpenClosedSets) this.showOpenClosedSets()
 
         this.showEmptyOrWall();
 
